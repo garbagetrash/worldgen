@@ -3,6 +3,16 @@ Worldgen
 
 Uses npm/npx and vite build tooling.
 
+Install dependencies
+--------------------
+
+Requires [npm](https://nodejs.org/en/download) installation. From there install
+dependencies with a normal:
+
+```sh
+$ npm install
+```
+
 Run Development Server
 ----------------------
 
