@@ -191,7 +191,6 @@ camera.position.z = 1;
 
 var neverAgain = false;
 function animate() {
-	requestAnimationFrame( animate );
     controls.update();
 	renderer.render( scene, camera );
     if (!neverAgain) {
@@ -199,4 +198,5 @@ function animate() {
         neverAgain = true;
     }
 }
-animate();
+
+renderer.setAnimationLoop(animate);
