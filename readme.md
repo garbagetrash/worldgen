@@ -17,14 +17,14 @@ Run Development Server
 ----------------------
 
 ```sh
-$ npx vite
+$ npm run dev
 ```
 
 Build Production
 ----------------
 
 ```sh
-$ npx vite build
+$ npm run build
 ```
 
 produces `dist/` folder whose contents can be pushed to web server.

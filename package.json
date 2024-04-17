@@ -1,7 +1,17 @@
 {
+  "type": "module",
+  "scripts": {
+    "dev": "node src/server/main.js",
+    "start": "NODE_ENV=production node src/server/main.js",
+    "build": "vite build"
+  },
   "dependencies": {
+    "express": "^4.19.2",
     "simplex-noise": "^4.0.1",
     "three": "^0.163.0",
-    "vite": "^5.2.8"
+    "vite-express": "^0.16.0"
+  },
+  "devDependencies": {
+    "vite": "^5.2.9"
   }
 }

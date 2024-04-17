@@ -123,7 +123,7 @@ for (var i = 0; i < 1000; i++) {
     particle.dy *= (1 - dt * friction);
 
     const offset2 = (resolution + 1) * Math.round(particle.x) + Math.round(particle.y);
-    const c_eq = particle.volume * Math.sqrt(particle.dx * particle.dx + particle.dy * particle.dy) *
+    var c_eq = particle.volume * Math.sqrt(particle.dx * particle.dx + particle.dy * particle.dy) *
                     (positions[offset + 2] - positions[offset2 + 2]);
     if (c_eq < 0.0) {
         c_eq = 0.0;
