@@ -2,12 +2,16 @@ import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { createNoise2D } from 'simplex-noise';
 import { VertexNormalsHelper } from 'three/addons/helpers/VertexNormalsHelper.js';
+import { VRButton } from 'three/addons/webxr/VRButton.js';
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.01, 1000 );
 const renderer = new THREE.WebGLRenderer();
 renderer.setSize( window.innerWidth, window.innerHeight );
 document.body.appendChild(renderer.domElement);
+
+document.body.appendChild(VRButton.createButton(renderer));
+renderer.xr.enabled = true;
 
 const controls = new OrbitControls( camera, renderer.domElement );
 
@@ -54,7 +58,7 @@ function apply_heightmap_transform(geometry, transform) {
     }
 }
 
-function heightmap_from_json(url) {
+function heightmap_from_obj(url) {
     // Loads a heightmap from a json loader endpoint and returns it as a geometry.
     fetch(url)
         .then(res => res.json())
@@ -82,6 +86,42 @@ var noise = fbm(5);
 apply_heightmap_transform(planegeo, noise);
 apply_heightmap_transform(planegeo, floor(0));
 planegeo.computeVertexNormals();
+
+//////////////////
+// File Load Stuff
+function heightmap_from_json(json) {
+    // Loads a heightmap from a json loader endpoint and returns it as a geometry.
+
+}
+
+const file_loader = document.getElementById("load_heightmap");
+file_loader.addEventListener("change", load_file, false);
+function load_file() {
+    const file = this.files[0];
+    console.log(`Loading file: ${file.name}`);
+    const buffer = file.text()
+        .then(buffer => {
+            console.log(`Size: ${buffer.length} bytes`);
+            const json = JSON.parse(buffer);
+            console.log(json);
+            const xdim = json['dims']['x'];
+            const ydim = json['dims']['y'];
+            const hmap = json['heights'];
+            planegeo = new THREE.PlaneGeometry( 1, 1, xdim, ydim );
+            var pos_attr = planegeo.getAttribute('position');
+            console.log('xdim: ' + xdim);
+            console.log('ydim: ' + ydim);
+            for (var x = 0; x < xdim; x++) {
+                for (var y = 0; y < ydim; y++) {
+                    pos_attr[3*(x*ydim + y) + 2] = hmap[x][y];
+                }
+            }
+            
+            planegeo.computeVertexNormals();
+            planegeo.computeBoundingBox();
+            planegeo.computeBoundingSphere();
+        });
+}
 
 ////////////////
 // Erosion stuff
@@ -149,9 +189,14 @@ scene.add( plane );
 
 camera.position.z = 1;
 
+var neverAgain = false;
 function animate() {
 	requestAnimationFrame( animate );
     controls.update();
 	renderer.render( scene, camera );
+    if (!neverAgain) {
+        planegeo.getAttribute('position').needsUpdate = true;
+        neverAgain = true;
+    }
 }
 animate();
